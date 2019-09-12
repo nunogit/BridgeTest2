@@ -1,0 +1,42 @@
+FROM frekele/java:jdk8
+#FROM frekele/ant:latest
+
+ENV ANT_VERSION=1.10.3
+ENV ANT_HOME=/opt/ant
+
+RUN wget --no-check-certificate --no-cookies http://archive.apache.org/dist/ant/binaries/apache-ant-${ANT_VERSION}-bin.tar.gz \
+    && wget --no-check-certificate --no-cookies http://archive.apache.org/dist/ant/binaries/apache-ant-${ANT_VERSION}-bin.tar.gz.sha512 \
+    && echo "$(cat apache-ant-${ANT_VERSION}-bin.tar.gz.sha512) apache-ant-${ANT_VERSION}-bin.tar.gz" | sha512sum -c \
+    && tar -zvxf apache-ant-${ANT_VERSION}-bin.tar.gz -C /opt/ \
+    && ln -s /opt/apache-ant-${ANT_VERSION} /opt/ant \
+    && rm -f apache-ant-${ANT_VERSION}-bin.tar.gz \
+    && rm -f apache-ant-${ANT_VERSION}-bin.tar.gz.sha512
+
+RUN update-alternatives --install "/usr/bin/ant" "ant" "/opt/ant/bin/ant" 1 && \
+    update-alternatives --set "ant" "/opt/ant/bin/ant" 
+
+ENV TMP_DIR /tmp
+WORKDIR $TMP_DIR
+# caching dependencies - this only runs if pom.xml changes
+#COPY pom.xml .
+#RUN mvn verify clean --fail-never
+# buld process
+COPY  . ./
+#RUN ls -lhisa
+#RUN du . -h
+#WORKDIR org.bridgedb.ws.server
+#RUN mvn clean install
+#RUN mvn clean package
+
+RUN ant
+
+##################################
+
+FROM openjdk:8
+
+ENV TMP_DIR /tmp
+WORKDIR $TMP_DIR
+
+COPY --from=0 /tmp/target/*.war /tmp/
+#EXPOSE 8080
+./start_server.sh
