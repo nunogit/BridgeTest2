@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Main-Class: org.bridgedb.util.hmdb.DownloadMetabocards
+Class-Path: org.bridgedb.jar org.bridgedb.bio.jar org.bridgedb.rdb.jar
+  derby.jar org.bridgedb.rdb.construct.jar
+Bundle-SymbolicName: org.bridgedb.tools.dbbuilder
+Export-Package: org.bridgedb.util.hmdb
+Bundle-Version: 2.3.0
+Require-Bundle: org.bridgedb,
+ org.bridgedb.bio,
+ org.bridgedb.rdb,
+ org.bridgedb.rdb.construct
+
