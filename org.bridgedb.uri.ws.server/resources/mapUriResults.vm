@@ -1,0 +1,102 @@
+<h2>Uri Mapping results</h2>
+#if ($exception)
+    <h4>Unable to process your request</h4>
+    <h3>$exception</h3>
+    <p>Warning: XML and JSON versions will throw an Exception with these parameters</p>
+#else 
+    #if( $mappings.isEmpty())
+        <h4>No Target Uris found</h4>
+        <p>
+        Warning if accepts header is set to "application/xml" or "application/json" this methods returns status 204 if no results are found.
+        </p>
+    #else
+        #set( $targetSystemCode = "" )
+        #set( $sourceUri = "" )
+               <ul> 
+        #foreach ( $mapping in $mappings)       
+            #if (!$sourceUri.equals($mapping.getSourceUri().iterator().next()))
+                #set( $sourceUri = $mapping.getSourceUri().iterator().next())
+                </ul>
+                <h3>Mappings for $sourceUri</h3>
+                <ul>
+                #set( $targetSystemCode = "" )
+            #end
+            #if ($mapping.getTarget())
+                #if (!$targetSystemCode.equals($mapping.getTarget().getDataSource().getSystemCode()))
+                    </ul><ul>
+                        #set( $targetSystemCode = $mapping.getTarget().getDataSource().getSystemCode() )
+                        <li><a href="$contextPath/dataSource/$targetSystemCode">$mapping.getTarget().getDataSource().getFullName()</a></li>
+                #end
+                    <ul>
+                        <li>$mapping.getTargetId()</li>      
+            #else
+                </ul><ul>
+                    <li>Unkown Uripattern</li>
+                    <ul>
+            #end
+                        <ul>
+                            #foreach ( $resultUri in $mapping.getTargetUri())
+                                <li><a href=$resultUri>$resultUri</a></li>
+                            #end
+                            #if ($mapping.isMappingToSelf())
+                                <li>This is an automatic mapping to alternative equals URIs
+                            #elseif ($mapping.isTransitive() )
+                                <li>Derived via</li>
+                                <ul>
+                                    #foreach ( $vai in $mapping.getViaMappings()) 
+                                        #set ( $id = $vai.getTarget().getId() )
+                                        #set ( $dataSource = $vai.getTarget().getDataSource() )
+                                        #set ( $setId = $vai.getMappingSetId())
+                                        <li>
+                                            <a href="$contextPath/toUris?id=$id&code=$dataSource.getSystemCode()"> 
+                                            $dataSource.getFullName():$id</a> in
+                                            <a href="$contextPath/mappingSet/$setId">mappingSet/$setId</a>
+                                        </li>
+                                    #end
+                                </ul>
+                            #else    
+                                <li>Found in <a href="$contextPath/mappingSet/$mapping.getMappingSetId()">mappingSet/$mapping.getMappingSetId()</a></li>
+                            #end
+                        </ul>
+                    </ul>
+        #end
+                </ul>
+    #end
+#end
+<h2>Parameters</h2>
+#if( $sourceUris.isEmpty())
+    <h4>No (or only empty) $URI parameter(s) provided! So no data can be returned<h4>
+#else
+    <h4>$URI</h4>
+    #foreach( $sourceUri in $sourceUris)
+        <a href=$sourceUri">$sourceUri</a><br>
+    #end
+#end
+#if ($lensURI)
+    <h4>No $lensURIName parameter so using $defaultLensName</h4>
+#else
+    <h4>${lensURIName}: $lensURI</h4>
+#end
+#if ( $targetUriPatterns.isEmpty())
+    #if ( $graph)
+        #if ( $graph.isEmpty())
+            <h4>NO ${targetUriPatternName}(s) or ${graphName} parameter so returning all mapped URIs.</h4>
+        #else    
+            <h4>${graphName}: $graph</h4>
+        #end
+    #else    
+        <h4>NO ${targetUriPatternName}(s) so returning all mapped URIs.</h4>
+    #end
+#else
+    <h4>${targetUriPatternName}(s)</h4>
+    #foreach( $targetUriPattern in $targetUriPatterns)
+        <br>$targetUriPattern
+    #end
+    #if ( $graph)
+        #if ( $graph.isEmpty())
+        #else
+            <h4>Unioned with ${graphName}: $graph</h4>
+        #end
+    #end
+#end
+

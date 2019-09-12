@@ -1,0 +1,37 @@
+<h2>Data Source $dataSource.getFullName()</h2>
+<dl>
+    <dt>FullName</dt>
+        <dd>$dataSource.getFullName()</dd>
+    <dt>sysCode</dt>
+        <dd>$dataSource.getSystemCode()</dd>
+    #set ($uriPattern = $dataSource.getKnownUrl($id))
+    <dt>primary UriPattern</dt>
+        <dd>$uriPattern</dd>
+    #set ($identifiersOrgUri = $dataSource.getIdentifiersOrgUri($id))
+    #if ($identifiersOrgUri)
+        <dt>Identifiers.Org Uri Pattern</dt>
+            <dd>$identifiersOrgUri</dd>
+    #end
+    #foreach ( $pattern in $Patterns)
+        #if ($pattern == $uriPattern)
+        #elseif ($pattern == $identifiersOrgUri)
+        #else
+            <dt>URI Pattern</dt>
+                <dd>$pattern</dd>
+        #end
+    #end
+    <dt>idExample</dt>
+        <dd>$dataSource.getExample().getId()</dd>
+    #if ($dataSource.getMainUrl())
+        <dt>mainUrl</dt>
+            <dd>$dataSource.getMainUrl()</dd>
+    #end
+    <dt>isPrimary</dt>
+        <dd>$dataSource.isPrimary()</dd>
+    #if ($dataSource.getMainUrl())
+        <dt>type</dt>
+            <dd>$dataSource.getType()</dd>
+    #end
+</dl>
+
+

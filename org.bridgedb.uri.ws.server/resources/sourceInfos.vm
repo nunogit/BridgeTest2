@@ -1,0 +1,42 @@
+<h2>Mapping Data Sources
+    #if ($lens)
+        using Lens $lens
+    #end    
+    </h2>
+#if ($message)
+    <p>$message</p>
+#end
+<p>Click on Source Name for more information about the Source.
+<br/>Click on Link Count to Drill down.
+<br/>Note: Number of Links could include duplicates</p>
+#if ($exception)
+    <h4>Unable to process your request</h4>
+    <h3>$exception</h3>
+    <p>Warning: XML and JSON versions will throw an Exception with these parameters</p>
+#else 
+    #if( $SourceInfos.isEmpty())
+        <h4>No Data Sources found</h4>
+        <p>
+        Warning if accepts header is set to "application/xml" or "application/json" this methods returns status 204 if no results are found.
+        </p>
+    #else
+        <table border="1" >
+            <tr>
+                <th>Source</th>
+                <th>Number of Targets</th>
+                <th>Number of Linksets</th>
+                <th>Number of Links</th>
+            </tr>
+            #foreach ( $sourceInfo in $SourceInfos)
+                <tr>
+                    <td><a href="$contextPath/dataSource/$sourceInfo.getSource().getSysCode()">$sourceInfo.getSourceDataSourceName()</a></td>
+                    <td><a href="$contextPath/SourceTargetInfos?sourceCode=$sourceInfo.getSource().getSysCode()#if($lens)&lensUri=$lens#end">$sourceInfo.getNumberOfTargets()</a></td>
+                    <td>$sourceInfo.getNumberOfLinksets()</td>
+                    <td>$sourceInfo.getNumberOfLinks()</td>
+                </tr>
+            #end
+        </table>
+    #end
+#end
+
+

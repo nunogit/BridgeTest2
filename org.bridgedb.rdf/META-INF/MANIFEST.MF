@@ -1,0 +1,6 @@
+Bundle-Name: org.bridgedb.linksets
+Bundle-Version: 2.3.0.qualifier
+Bundle-SymbolicName: org.bridgedb.linksets
+Export-Package: * 
+Require-Bundle: org.bridgedb,
+  org.bridgedb.sql

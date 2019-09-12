@@ -1,0 +1,106 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.bridgedb</groupId>
+    <artifactId>org.bridgedb.server</artifactId>
+    <packaging>jar</packaging>
+    <!--  packaging>war</packaging -->
+    <name>BridgeDb Server</name>
+    <description>Restful service</description>
+    <parent>
+        <artifactId>bridgedb-bundle</artifactId>
+        <groupId>org.bridgedb</groupId>
+        <version>2.4.0-SNAPSHOT</version>
+    </parent>
+    <build>
+        <directory>target</directory>
+        <outputDirectory>target/classes</outputDirectory>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+        <testOutputDirectory>target/test-classes</testOutputDirectory>
+        <sourceDirectory>src</sourceDirectory>
+        <scriptSourceDirectory>scripts</scriptSourceDirectory>
+        <testSourceDirectory>test</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>resources</directory>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>test-resources</directory>
+            </testResource>
+        </testResources>
+        <plugins>
+
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>maven-jetty-plugin</artifactId>
+        <version>6.1.25</version>
+        <configuration>
+          <!--contextPath>${basecamp.server.contextpath}</contextPath-->
+          <scanIntervalSeconds>10</scanIntervalSeconds>
+          <webXml>web.xml</webXml>
+        </configuration>
+      </plugin>
+      
+           <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2-beta-5</version>
+                <configuration>
+	                 <archive>
+                        <manifest>
+                            <mainClass>org.bridgedb.server.Server</mainClass>
+                        </manifest>
+	                 </archive>
+	                 <descriptorRefs>
+	                        <descriptorRef>jar-with-dependencies</descriptorRef>
+	                 </descriptorRefs>
+	                 <finalName>bridgedbServer</finalName>   
+                 </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <repositories>
+        <repository>
+            <id>maven-restlet</id>
+            <name>Public online Restlet repository</name>
+            <url>http://maven.restlet.org</url>
+        </repository>
+    </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>org.bridgedb</groupId>
+            <artifactId>org.bridgedb</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.restlet.jee</groupId>
+            <artifactId>org.restlet.ext.servlet</artifactId>
+            <version>2.0.15</version>
+        </dependency>
+          <dependency>
+            <groupId>org.bridgedb</groupId>
+            <artifactId>org.bridgedb.bio</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+         <dependency>
+            <groupId>org.bridgedb</groupId>
+            <artifactId>org.bridgedb.rdb</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bridgedb.webservice</groupId>
+            <artifactId>org.bridgedb.webservice.bridgerest</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-cli</groupId>
+            <artifactId>commons-cli</artifactId>
+            <version>${commons-cli.version}</version>
+        </dependency>
+       
+    </dependencies>
+</project>
