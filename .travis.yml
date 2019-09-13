@@ -1,0 +1,12 @@
+language: java
+
+jdk:
+  - oraclejdk11
+
+script: mvn clean install -DskipTests=true
+
+##services:
+##  - mysql
+##
+##before_install:
+## - mysql < mysqlConfig.sql  
