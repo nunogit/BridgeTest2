@@ -1,32 +1,51 @@
-FROM adoptopenjdk/maven-openjdk8
+ARG tmp_dir_bdb=/tmp/bridgedb
+ARG tmp_dir_fac=/tmp/bdbfac
+ARG tmp_dir_facws=/tmp/bdbfacws
+ARG dir_bdb=/bridgedb/
 
-ENV TMP_DIR_BDB /tmp/bridgedb
-ENV TMP_DIR_FAC /tmp/bdbfac
-WORKDIR $TMP_DIR_BDB
+FROM openjdk:8 AS buildenv
 
-RUN apt-get update
-RUN apt-get -y install ant
-RUN apt-get -y install git-core
+ARG tmp_dir_bdb
+ARG tmp_dir_fac
+ARG tmp_dir_facws
+
+#prepare build environment
+RUN apt-get update; apt-get -y install ant; apt-get -y install git-core; apt-get -y install maven
 
 # buld process
-COPY  . ./
-RUN ant build
+RUN mkdir ${tmp_dir_bdb}
+WORKDIR  ${tmp_dir_bdb}
+COPY . ./
+RUN ls -lhisa
+RUN mvn clean install
 
+RUN mkdir ${tmp_dir_fac}
+WORKDIR ${tmp_dir_fac}
+RUN git clone https://github.com/nunogit/BridgeDbFacade.git .
+RUN mvn clean package install dependency:copy-dependencies
 
-WORKDIR $TMP_DIR_FAC
+RUN mkdir ${tmp_dir_facws}
+WORKDIR ${tmp_dir_facws}
+RUN git clone https://github.com/nunogit/BridgeDbFacadeWS.git .
+RUN  mvn clean package
+RUN ls ${tmp_dir_facws}/target/
+#RUN apt-get xxx
 
 #new machine
 FROM tomcat:8.5.35-jre8
 
-ENV TMP_DIR_BDB /tmp/bridgedb
-ENV TMP_DIR_FAC /tmp/bdbfac
-ENV DIR_BDB /bridgedb/
+ARG tmp_dir_bdb
+ARG tmp_dir_fac
+ARG tmp_dir_facws
+ARG dir_bdb
 
-COPY --from=0 $TMP_DIR_BDB/*.sh $DIR_BDB
-COPY --from=0 $TMP_DIR_BDB/*.jar $DIR_BDB
-COPY --from=0 $TMP_DIR_BDB/dist/*.jar $DIR_BDB
+COPY --from=buildenv ${tmp_dir_bdb}/*.sh ${dir_bdb}
+COPY --from=buildenv ${tmp_dir_bdb}/*.jar ${dir_bdb}
+COPY --from=buildenv ${tmp_dir_bdb}/dist/*.jar ${dir_bdb}
+COPY --from=buildenv ${tmp_dir_fac}/target/*.jar ${dir_bdb}
+COPY --from=buildenv ${tmp_dir_facws}/target/BridgeDbFacadeWS-0.0.1-SNAPSHOT.jar ${dir_bdb}/BridgeDbFacadeWS.jar
 
-WORKDIR $DIR_BDB
+WORKDIR ${dir_bdb}
 
 #prepare Bridge files
 RUN mkdir /data/
@@ -34,11 +53,7 @@ RUN mkdir /data/
 #this folder needs to added with the needed bridged files and gdb.config
 COPY config/ /data/
 RUN chmod +x startService.sh
-RUN ls $DIR_BDB
 
 EXPOSE 8080
 CMD ["./startService.sh", "/data/gdb.ini"]
 
-#CMD ["./startService.sh"]
-
-#CMD ["catalina.sh", "run"]
