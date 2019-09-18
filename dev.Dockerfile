@@ -40,8 +40,8 @@ ARG tmp_dir_facws
 ARG dir_bdb
 
 COPY --from=buildenv ${tmp_dir_bdb}/*.sh ${dir_bdb}
-COPY --from=buildenv ${tmp_dir_bdb}/*.jar ${dir_bdb}
-COPY --from=buildenv ${tmp_dir_bdb}/dist/*.jar ${dir_bdb}
+#COPY --from=buildenv ${tmp_dir_bdb}/*.jar ${dir_bdb}
+#COPY --from=buildenv ${tmp_dir_bdb}/dist/*.jar ${dir_bdb}
 COPY --from=buildenv ${tmp_dir_fac}/target/*.jar ${dir_bdb}
 COPY --from=buildenv ${tmp_dir_facws}/target/BridgeDbFacadeWS-0.0.1-SNAPSHOT.jar ${dir_bdb}/BridgeDbFacadeWS.jar
 
