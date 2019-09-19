@@ -18,6 +18,7 @@ WORKDIR  ${tmp_dir_bdb}
 COPY . ./
 RUN ls -lhisa
 RUN mvn clean install
+RUN ant build
 
 RUN mkdir ${tmp_dir_fac}
 WORKDIR ${tmp_dir_fac}
@@ -32,7 +33,8 @@ RUN ls ${tmp_dir_facws}/target/
 #RUN apt-get xxx
 
 #new machine
-FROM tomcat:8.5.35-jre8
+FROM openjdk:8 AS runenv
+#FROM tomcat:8.5.35-jre8
 
 ARG tmp_dir_bdb
 ARG tmp_dir_fac
@@ -40,8 +42,8 @@ ARG tmp_dir_facws
 ARG dir_bdb
 
 COPY --from=buildenv ${tmp_dir_bdb}/*.sh ${dir_bdb}
-#COPY --from=buildenv ${tmp_dir_bdb}/*.jar ${dir_bdb}
-#COPY --from=buildenv ${tmp_dir_bdb}/dist/*.jar ${dir_bdb}
+COPY --from=buildenv ${tmp_dir_bdb}/dist/*.jar ${dir_bdb}
+COPY --from=buildenv ${tmp_dir_bdb}/target/*.jar ${dir_bdb}
 COPY --from=buildenv ${tmp_dir_fac}/target/*.jar ${dir_bdb}
 COPY --from=buildenv ${tmp_dir_facws}/target/BridgeDbFacadeWS-0.0.1-SNAPSHOT.jar ${dir_bdb}/BridgeDbFacadeWS.jar
 
